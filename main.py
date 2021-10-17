@@ -1,5 +1,4 @@
 from data import Data
-from os import path
 
 class Main:
 	def __init__(self, master_file, data_file):
@@ -55,6 +54,3 @@ class Main:
 		else:
 			print("\nWrong value please try again\n")
 			return self.master_change()
-
-
-Main('master.json', 'data.json').main()

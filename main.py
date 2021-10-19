@@ -35,7 +35,7 @@ class Main:
 
 	def master_change(self):
 		print('Do you want to change your master password?\n')
-		choose = input('Write [Yes, Y] for yes, [N, No] for No').upper()
+		choose = input('Write [Yes, Y] for yes, [N, No] for No:\n').upper()
 
 		if choose == 'YES' or choose == 'Y':
 			password = input('\nWrite your new master password:\n')

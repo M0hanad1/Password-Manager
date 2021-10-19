@@ -28,8 +28,8 @@ class Data:
 
 			data[name] = self.convert_to(password)
 
-			with open(self.file_name, 'w') as d:
-				json.dump(data, d, indent=4)
+		with open(self.file_name, 'w') as d:
+			json.dump(data, d, indent=4)
 
 		return True
 
@@ -54,8 +54,8 @@ class Data:
 			data[new_name] = data[old_name]
 			del data[old_name]
 
-			with open(self.file_name, 'w') as d:
-				json.dump(data, d, indent=4)
+		with open(self.file_name, 'w') as d:
+			json.dump(data, d, indent=4)
 
 		return True
 
@@ -68,8 +68,8 @@ class Data:
 
 			data[name] = self.convert_to(password)
 
-			with open(self.file_name, 'w') as d:
-				json.dump(data, d, indent=4)
+		with open(self.file_name, 'w') as d:
+			json.dump(data, d, indent=4)
 
 		return True
 
@@ -83,8 +83,8 @@ class Data:
 			else:
 				return False
 
-			with open(self.file_name, 'w') as d:
-				json.dump(data, d, indent=4)
+		with open(self.file_name, 'w') as d:
+			json.dump(data, d, indent=4)
 
 		return True
 

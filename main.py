@@ -1,13 +1,13 @@
-from data import Data
+from file import File
 
 class Main:
-	def __init__(self, master_file, data_file):
-		self.master_file = Data(master_file)
-		self.data_file = Data(data_file)
+	def __init__(self, master_file, File_file):
+		self.master_file = File(master_file)
+		self.file_file = File(File_file)
 
 		if bool(self.master_file.show()) is False:
-			if bool(self.data_file.show()):
-				self.data_file.remove_all()
+			if bool(self.file_file.show()):
+				self.file_file.remove_all()
 
 	def main(self):
 		if bool(self.master_file.show()) is False:

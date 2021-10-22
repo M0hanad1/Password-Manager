@@ -1,9 +1,9 @@
 from file import File
 
 class Main:
-	def __init__(self, master_file, File_file):
+	def __init__(self, master_file, data_file):
 		self.master_file = File(master_file)
-		self.file_file = File(File_file)
+		self.file_file = File(data_file)
 
 		if bool(self.master_file.show()) is False:
 			if bool(self.file_file.show()):

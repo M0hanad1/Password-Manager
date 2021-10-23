@@ -12,11 +12,7 @@ class Data:
         return "".join([chr(self.target[i]) for i in range(len(self.target))])
 
     def name_to(self) -> list:
-        message_bytes = self.target.encode('ascii')
-        base64_bytes = b85encode(message_bytes)
-        return base64_bytes.decode('ascii')
+        return str(b85encode(bytes(self.target, 'utf-8')))[2:-1]
 
     def name_from(self) -> str:
-        base64_bytes = self.target.encode('ascii')
-        message_bytes = b85decode(base64_bytes)
-        return message_bytes.decode('ascii')
+        return str(b85decode(bytes(self.target, 'utf-8')))[2:-1]

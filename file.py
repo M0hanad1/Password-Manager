@@ -80,6 +80,6 @@ class File:
 
 		return True
 
-	def remove_all(self) -> None:
+	def delete_all(self) -> None:
 		with open(self.file_name, 'w') as f:
 			json.dump({}, f, indent=4)

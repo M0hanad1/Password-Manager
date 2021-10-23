@@ -1,4 +1,6 @@
 from file import File
+from os import remove
+from json.decoder import JSONDecodeError
 
 
 class Main:
@@ -6,31 +8,49 @@ class Main:
 		self.master_file = File(master_file)
 		self.data_file = File(data_file)
 
-		if len(self.master_file.show()) == 0 or 'master' not in self.master_file.show().keys() or self.master_file.show()['master'] < 6:
-			self.data_file.delete_all()
-			self.master_file.delete_all()
+		try:
+			if len(self.master_file.show()) == 0 or 'master' not in self.master_file.show().keys() or self.master_file.show()['master'] < 6:
+				self.data_file.delete_all()
+				self.master_file.delete_all()
+
+		except JSONDecodeError:
+			remove('./master.json')
+			remove('./data.json')
+			print('\nThere\'s a problem with the data files\nPlease try again\n')
+			Main('master.json', 'data.json').main()
 
 	def main(self) -> None:
-		if len(self.master_file.show()) == 0:
-			print('You don\'t have a master please\nPlease write one')
-			master_password = input('Write your master password:\n')
+		try:
+			if len(self.master_file.show()) == 0:
+				print('You don\'t have a master please\nPlease write one')
+				master_password = input('Write your master password:\n')
 
-			if len(master_password) < 6 or len(master_password) > 128:
-				print('\nThe password\'s length should be between 6 and 128 characters')
-				print('Please try again\n')
+				if len(master_password) < 6 or len(master_password) > 128:
+					print('\nThe password\'s length should be between 6 and 128 characters')
+					print('Please try again\n')
+					return self.main()
+
+				self.master_file.save('master', master_password)
+				print(f'\nYour master password is: {master_password}\n')
+				return self.master_change()
+
+			if input('Write your master password:\n') == self.master_file.show()['master']:
+				print('\nWelcome\n')
+				return self.master_change()
+
+			else:
+				print('\nThat\'s not your master password\nPlease try again\n')
 				return self.main()
 
-			self.master_file.save('master', master_password)
-			print(f'\nYour master password is: {master_password}\n')
-			return self.master_change()
+		except FileNotFoundError:
+			pass
 
-		if input('Write your master password:\n') == self.master_file.show()['master']:
-			print('\nWelcome\n')
-			return self.master_change()
+		except JSONDecodeError:
+			remove('./master.json')
+			remove('./data.json')
 
-		else:
-			print('\nThat\'s not your master password\nPlease try again\n')
-			return self.main()
+		print('\nThere\'s a problem with the data files\nPlease try again\n')
+		Main('master.json', 'data.json').main()
 
 	def master_change(self):
 		print('Do you want to change your master password?\n')

@@ -26,15 +26,9 @@ class File:
 		return True
 
 	def show(self) -> dict:
-		result = {}
-
 		with open(self.file_name) as f:
 			data = json.load(f)
-
-			for i in data:
-				result[Data(i).name_from()] = Data(data[i]).pass_from()
-
-		return result
+			return {Data(i).name_from(): Data(data[i]).pass_from() for i in data}
 
 	def edit_name(self, old_name: str, new_name: str) -> bool:
 		with open(self.file_name) as f:

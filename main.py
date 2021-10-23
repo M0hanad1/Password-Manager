@@ -6,9 +6,9 @@ class Main:
 		self.master_file = File(master_file)
 		self.data_file = File(data_file)
 
-		if len(self.master_file.show()) == 0:
-			if len(self.data_file.show()) > 0:
-				self.data_file.delete_all()
+		if len(self.master_file.show()) == 0 or 'master' not in self.master_file.show().keys() or self.master_file.show()['master'] < 6:
+			self.data_file.delete_all()
+			self.master_file.delete_all()
 
 	def main(self) -> None:
 		if len(self.master_file.show()) == 0:

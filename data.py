@@ -11,7 +11,7 @@ class Data:
     def pass_from(self) -> str:
         return "".join([chr(self.target[i]) for i in range(len(self.target))])
 
-    def name_to(self) -> list:
+    def name_to(self) -> str:
         return str(b85encode(bytes(self.target, 'utf-8')))[2:-1]
 
     def name_from(self) -> str:

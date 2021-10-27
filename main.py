@@ -5,11 +5,11 @@ from json.decoder import JSONDecodeError
 
 class Main:
 	def __init__(self, master_file, data_file):
-		self.master_file = File(master_file)
-		self.data_file = File(data_file)
-
 		try:
-			if len(self.master_file.show()) == 0 or 'master' not in self.master_file.show().keys() or self.master_file.show()['master'] < 6:
+			self.master_file = File(master_file)
+			self.data_file = File(data_file)
+
+			if (len(self.master_file.show()) == 0) or (self.master_file.search('master') is False) or (self.master_file.show()['master'] < 6):
 				self.data_file.delete_all()
 				self.master_file.delete_all()
 
@@ -50,7 +50,7 @@ class Main:
 			remove('./data.json')
 
 		print('\nThere\'s a problem with the data files\nPlease try again\n')
-		Main('master.json', 'data.json').main()
+		return Main('master.json', 'data.json').main()
 
 	def master_change(self):
 		print('Do you want to change your master password?\n')
@@ -77,3 +77,19 @@ class Main:
 		else:
 			print("\nWrong value please try again\n")
 			return self.master_change()
+
+	def save_password(self, name: str, password: str) -> None:
+		if self.data_file.search(name):
+			print(f'There\'s a password with name {name}\nPlease try again')
+			return self.main()
+
+		self.data_file.save(name, password)
+		print(f'Name: {name}\nPassword: {password}')
+		return self.main()
+
+	def delete_name(self, name: str) -> None:
+		if self.data_file.search(name):
+			self.data_file.delete(name)
+			return self.main
+
+		return self.main()

@@ -80,16 +80,67 @@ class Main:
 
 	def save_password(self, name: str, password: str) -> None:
 		if self.data_file.search(name):
-			print(f'There\'s a password with name {name}\nPlease try again')
+			print(f'\nThere\'s already a password with name {name} in the data\nPlease try again\n')
 			return self.main()
 
 		self.data_file.save(name, password)
-		print(f'Name: {name}\nPassword: {password}')
+		print(f'Name: {name}\nPassword: {password}\n')
 		return self.main()
 
 	def delete_name(self, name: str) -> None:
-		if self.data_file.search(name):
-			self.data_file.delete(name)
-			return self.main
+		if name == '*':
+			self.data_file.delete_all()
+			return self.main()
 
+		if self.data_file.search(name) is False:
+			print(f'\nThere\'s no password with name {name} in the data\nPlease try again\n')
+			return self.main()
+
+		self.data_file.delete(name)
+		return self.main()
+
+	def name_edit(self, old_name: str, new_name: str) -> None:
+		if self.data_file.search(old_name) is False:
+			print(f'\nThere\'s no password with name {old_name} in the data\nPlease try again\n')
+			return self.main()
+
+		if self.data_file.search(new_name):
+			print(f'\nThere\'s already a password with name {new_name} in the data\nPlease try again\n')
+			return self.main()
+
+		self.data_file.edit_name(old_name, new_name)
+		return self.main()
+
+	def pass_edit(self, name: str, new_password: str) -> None:
+		data = self.data_file.show()[name]
+
+		if self.data_file.search(name):
+			if data == new_password:
+				print('\nThat\'s the same old password\nPlease try again\n')
+				return self.main()
+
+			print(f'\nName: {name}\nOld password: {data}')
+			print(f'New password: {new_password}\n')
+
+			self.data_file.edit_pass(name, new_password)
+			return self.main()
+
+		print(f'\nThere\'s no password with name {name} in the data\nPleasy try again\n')
+		return self.main()
+
+	def get_pass(self, name: str) -> None:
+		if name != '*' and self.data_file.search(name) is False:
+			print(f'\nThere\'s no password with name {name} in the data\nPlease try again\n')
+			return self.main()
+
+		data = self.data_file.show()
+
+		if name == '*':
+			for i in data:
+				print(f'\nName: {i}\nPassword: {data[i]}')
+
+		else:
+			print(f'\nName: {name}\nPassword: {data[name]}')
+
+		print('\n')
 		return self.main()

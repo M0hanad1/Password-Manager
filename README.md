@@ -7,6 +7,6 @@
 
 - **This app using [Python](https://www.python.org/ "Python") language.**
 
-- **This app doesn't have a [GUI](https://en.wikipedia.org/wiki/Graphical_user_interface "GUI").**
+- **This app doesn't have a [GUI](https://en.wikipedia.org/wiki/Graphical_user_interface "Graphical User Interface").**
 
 - **This is just a simple [**Console App**](https://en.wikipedia.org/wiki/Console_application "Console App").**

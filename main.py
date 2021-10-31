@@ -1,27 +1,39 @@
 from file import File
-from os import remove
+from os import path, mkdir, remove
 from json.decoder import JSONDecodeError
 from string import ascii_uppercase, ascii_lowercase, punctuation, digits
 from random import choice
 
 
 class Main:
-	def __init__(self, master_file, data_file):
-		try:
-			self.master_file = File(master_file)
-			self.data_file = File(data_file)
+	def __init__(self, folder, master_file, data_file):
+		if path.exists(folder) is False:
+			mkdir(folder)
 
+		self.folder = folder
+		self.master_file = File(folder + master_file)
+		self.data_file = File(folder + data_file)
+
+		try:
 			check = self.master_file.show()
 
 			if (len(check) == 0) or (self.master_file.search('master') is False) or int(len(check['master']) < 6):
-				self.data_file.delete_all()
 				self.master_file.delete_all()
+				self.data_file.delete_all()
 
 		except JSONDecodeError:
-			remove('./master.json')
-			remove('./data.json')
+			remove(folder + master_file)
+			remove(folder + data_file)
 			print('\nThere\'s a problem with the data files\nPlease try again\n')
-			Main('master.json', 'data.json').main()
+			Main(folder, master_file, data_file).main()
+
+		try:
+			self.data_file.search('test')
+
+		except JSONDecodeError:
+			remove(folder + data_file)
+			print('\nThere\'s a problem with the data files\nPlease try again\n')
+			Main(folder, master_file, data_file).main()
 
 	@staticmethod
 	def check(string: str) -> list:
@@ -68,14 +80,12 @@ class Main:
 			return self.main()
 
 		except FileNotFoundError:
-			pass
+			print('\nThere\'s a problem with the data files\nPlease try again\n')
 
 		except JSONDecodeError:
-			remove('./master.json')
-			remove('./data.json')
+			pass
 
-		print('\nThere\'s a problem with the data files\nPlease try again\n')
-		return Main('master.json', 'data.json').main()
+		return Main(self.folder, '/master.json', '/data.json').main()
 
 	def master_change(self):
 		print('Do you want to change your master password?')
@@ -255,12 +265,12 @@ class Main:
 			name = input('\nWrite the name of the password you want to save it:\n')
 
 			if len(name) < 3 or len(name) > 64:
-				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
-				return self.ask()
+				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again')
+				return self.ask(string)
 
 			if self.data_file.search(name):
-				print(f'\nThere\'s already a password with name {name} in the data\nPlease try again\n')
-				return self.ask()
+				print(f'\nThere\'s already a password with name {name} in the data\nPlease try again')
+				return self.ask(string)
 
 			self.save_password(name, string)
 
@@ -269,8 +279,8 @@ class Main:
 			return self.run()
 
 		else:
-			print('\nWrong value please try again\n')
-			return self.ask()
+			print('\nWrong value please try again')
+			return self.ask(string)
 
 	def save_password(self, name: str, password: str) -> None:
 		self.data_file.save(name, password)

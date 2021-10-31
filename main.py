@@ -6,7 +6,7 @@ from random import choice
 
 
 class Main:
-	def __init__(self, folder, master_file, data_file):
+	def __init__(self, folder: str, master_file: str, data_file: str) -> None:
 		if path.exists(folder) is False:
 			mkdir(folder)
 
@@ -87,7 +87,7 @@ class Main:
 
 		return Main(self.folder, '/master.json', '/data.json').main()
 
-	def master_change(self):
+	def master_change(self) -> None:
 		print('Do you want to change your master password?')
 		choose = input('Write [1, Y, Yes] for yes, [2, N, No] for No:\n').strip().upper()
 

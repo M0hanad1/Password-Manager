@@ -1,6 +1,8 @@
 from file import File
 from os import remove
 from json.decoder import JSONDecodeError
+from string import ascii_uppercase, ascii_lowercase, punctuation, digits
+from random import choice
 
 
 class Main:
@@ -9,9 +11,9 @@ class Main:
 			self.master_file = File(master_file)
 			self.data_file = File(data_file)
 
-			master_check = self.master_file.show()
+			check = self.master_file.show()
 
-			if (len(master_check) == 0) or (self.master_file.search('master') is False) or (int(len(master_check['master']) < 6)):
+			if (len(check) == 0) or (self.master_file.search('master') is False) or int(len(check['master']) < 6):
 				self.data_file.delete_all()
 				self.master_file.delete_all()
 
@@ -20,6 +22,25 @@ class Main:
 			remove('./data.json')
 			print('\nThere\'s a problem with the data files\nPlease try again\n')
 			Main('master.json', 'data.json').main()
+
+	@staticmethod
+	def check(string: str) -> list:
+		result = []
+
+		for i in range(len(string)):
+			if (string[i] == '1' or string[i] == 'U') and ascii_uppercase not in result:
+				result.append(ascii_uppercase)
+
+			elif (string[i] == '2' or string[i] == 'L') and ascii_lowercase not in result:
+				result.append(ascii_lowercase)
+
+			elif (string[i] == '3' or string[i] == 'D') and digits not in result:
+				result.append(digits)
+
+			elif (string[i] == '4' or string[i] == 'P') and punctuation not in result:
+				result.append(punctuation)
+
+		return result
 
 	def main(self) -> None:
 		try:
@@ -93,11 +114,13 @@ class Main:
 		if len(self.data_file.show()) > 0:
 			check = True
 
-		print('[1, S, Save]: to save a new password')
+		print('[1, S, Save]: to save a new password\n[2, M, Make]: to generate a random password')
 
 		if check:
-			print('[2, G, Get]: to get a password\s from the data\n[3, E, Edit]: to edit a password\\name')
-			print('[4, D, Delete]: to delete a password\s')
+			print(
+				'[3, G, Get]: to get a password\\s from the data\n[4, E, Edit]: to edit a password\\name'
+				'\n[5, D, Delete]: to delete a password\\s'
+			)
 
 		print('[Q, Quit]: to quit from the program\n')
 
@@ -122,19 +145,51 @@ class Main:
 
 			return self.save_password(name, password)
 
+		elif choose == '2' or choose == 'M' or choose == 'MAKE':
+			result = ''
+
+			print(
+				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
+				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\n'
+				'If you want to choose a multiple choices you can just write it like this:\n124 or ULP\n'
+			)
+
+			choose = self.check(input("Choose from these:\n").strip().upper())
+
+			if len(choose) == 0:
+				print('\nWrong value please try again\n')
+				return self.run()
+
+			try:
+				pass_len = int(input('\nWrite the size of the password\nShould be between 6 and 128:\n'))
+
+				if pass_len < 6 or pass_len > 128:
+					print('\nThe password size should be between 6 and 128\nPlease try again\n')
+					return self.run()
+
+			except ValueError:
+				print('\nWrong value please try again\n')
+				return self.run()
+
+			for _ in range(pass_len):
+				result += choice(choice(choose))
+
+			self.ask(result)
+
 		elif choose == 'Q' or choose == 'QUIT':
 			quit('\nOkay\nSee you later')
 
 		else:
 			if check:
-				if choose == '2' or choose == 'G' or choose == 'GET':
+				if choose == '3' or choose == 'G' or choose == 'GET':
 					return self.get_pass(
 						input(
-							'\nWrite the name of the password you want to get it\nOr write [*] to get all the passwords:\n'
+							'\nWrite the name of the password you want to get it\n'
+							'Or write [*] to get all the passwords:\n'
 						)
 					)
 
-				elif choose == '3' or choose == 'E' or choose == 'EDIT':
+				elif choose == '4' or choose == 'E' or choose == 'EDIT':
 					print('\nWrite:\n[1, N, Name]: to edit a name\n[2, P, Password]: to edit a password')
 					edit_mode = input('\nChoose one of these:\n').strip().upper()
 
@@ -180,16 +235,42 @@ class Main:
 						print('\nWrong value please try again\n')
 						return self.run()
 
-				elif choose == '4' or choose == 'D' or choose == 'DELETE':
+				elif choose == '5' or choose == 'D' or choose == 'DELETE':
 					return self.delete_name(
 						input(
-							'\nWrite the name of the password you want to delete it\nOr write [*] to delete all the passwords:\n'
+							'\nWrite the name of the password you want to delete it\n'
+							'Or write [*] to delete all the passwords:\n'
 						)
 					)
 
 			else:
 				print('\nWrong value please try again\n')
 				return self.run()
+
+	def ask(self, string: str) -> None:
+		print(f'\nYour random password is: {string}\nDo you want to save it?\n')
+		choose = input('Write [1, Y, Yes] for yes, [2, N, No] for No:\n').strip().upper()
+
+		if choose == '1' or choose == 'Y' or choose == 'YES':
+			name = input('\nWrite the name of the password you want to save it:\n')
+
+			if len(name) < 3 or len(name) > 64:
+				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
+				return self.ask()
+
+			if self.data_file.search(name):
+				print(f'\nThere\'s already a password with name {name} in the data\nPlease try again\n')
+				return self.ask()
+
+			self.save_password(name, string)
+
+		elif choose == '2' or choose == 'N' or choose == 'NO':
+			print('\nOkay\n')
+			return self.run()
+
+		else:
+			print('\nWrong value please try again\n')
+			return self.ask()
 
 	def save_password(self, name: str, password: str) -> None:
 		self.data_file.save(name, password)
@@ -233,6 +314,7 @@ class Main:
 			print('')
 			[print(f'Name: {i}\nPassword: {data[i]}\n') for i in data]
 
-		else: print(f'\nName: {name}\nPassword: {data[name]}\n')
+		else:
+			print(f'\nName: {name}\nPassword: {data[name]}\n')
 
 		return self.run()

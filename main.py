@@ -2,7 +2,7 @@ from file import File
 from os import path, mkdir, remove
 from json.decoder import JSONDecodeError
 from string import ascii_uppercase, ascii_lowercase, punctuation, digits
-from random import choice
+from random import choice, shuffle
 
 
 class Main:
@@ -17,7 +17,7 @@ class Main:
 		try:
 			check = self.master_file.show()
 
-			if (len(check) == 0) or (self.master_file.search('master') is False) or int(len(check['master']) < 6):
+			if len(check) == 0 or len(check['master']) < 6:
 				self.master_file.delete_all()
 				self.data_file.delete_all()
 
@@ -53,6 +53,26 @@ class Main:
 				result.append(punctuation)
 
 		return result
+
+	@staticmethod
+	def generate(password_len: int, lst: list):
+		password = []
+		num = (password_len // len(lst))
+		index = 0
+
+		try:
+			while len(password) < password_len:
+				for _ in range(num):
+					password.append(choice(lst[index]))
+
+				index += 1
+
+		except IndexError:
+			for _ in range(password_len - len(password)):
+				password.append(choice(choice(lst)))
+
+		shuffle(password)
+		return ''.join(password)
 
 	def main(self) -> None:
 		try:
@@ -156,8 +176,6 @@ class Main:
 			return self.save_password(name, password)
 
 		elif choose == '2' or choose == 'M' or choose == 'MAKE':
-			result = ''
-
 			print(
 				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
 				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\n'
@@ -181,10 +199,7 @@ class Main:
 				print('\nWrong value please try again\n')
 				return self.run()
 
-			for _ in range(pass_len):
-				result += choice(choice(choose))
-
-			self.ask(result)
+			self.ask(self.generate(pass_len, choose))
 
 		elif choose == 'Q' or choose == 'QUIT':
 			quit('\nOkay\nSee you later')

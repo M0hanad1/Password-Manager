@@ -55,7 +55,7 @@ class Main:
 		return result
 
 	@staticmethod
-	def generate(password_len: int, lst: list):
+	def generate(password_len: int, lst: list) -> str:
 		password = []
 		num = (password_len // len(lst))
 		index = 0
@@ -157,14 +157,14 @@ class Main:
 		choose = input('Choose one of these:\n').strip().upper()
 
 		if choose == '1' or choose == 'S' or choose == 'SAVE':
-			name = input('\nWrite the name of the password you want to save it:\n')
+			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
 			if len(name) < 3 or len(name) > 64:
 				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
 				return self.run()
 
 			if self.data_file.search(name):
-				print(f'\nThere\'s already a password with name {name} in the data\nPlease try again\n')
+				print(f'\nThere\'s already a password with name "{name}" in the data\nPlease try again\n')
 				return self.run()
 
 			password = input('\nWrite the password:\n')
@@ -211,7 +211,7 @@ class Main:
 						input(
 							'\nWrite the name of the password you want to get it\n'
 							'Or write [*] to get all the passwords:\n'
-						)
+						).lower()
 					)
 
 				elif choose == '4' or choose == 'E' or choose == 'EDIT':
@@ -219,13 +219,17 @@ class Main:
 					edit_mode = input('\nChoose one of these:\n').strip().upper()
 
 					if edit_mode == '1' or edit_mode == 'N' or edit_mode == 'NAME':
-						old_name = input('\nWrite the old name you want to change from it:\n')
+						old_name = input('\nWrite the old name you want to change from it:\n').lower()
 
 						if self.data_file.search(old_name) is False:
-							print(f'\nThere\'s no password with name {old_name} in the data\nPlease try again\n')
+							print(f'\nThere\'s no password with name "{old_name}" in the data\nPlease try again\n')
 							return self.run()
 
-						new_name = input('\nWrite the new name you want to change to it:\n')
+						new_name = input('\nWrite the new name you want to change to it:\n').lower()
+
+						if self.data_file.search(new_name):
+							print(f'\nThere\'s already a password with name "{new_name}" on the data\nPlease try again\n')
+							return self.run()
 
 						if old_name == new_name:
 							print(f'\nThat\'s the same old name\nPlease try again\n')
@@ -238,10 +242,10 @@ class Main:
 						return self.name_edit(old_name, new_name)
 
 					elif edit_mode == '2' or edit_mode == 'P' or edit_mode == 'PASSWORD':
-						name = input('\nWrite the name of the password you want to change it:\n')
+						name = input('\nWrite the name of the password you want to change it:\n').lower()
 
 						if self.data_file.search(name) is False:
-							print(f'\nThere\'s no password with name {name} in the data\nPlease try again\n')
+							print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
 							return self.run()
 
 						new_password = input('\nWrite the new password you want to change to it:\n')
@@ -265,7 +269,7 @@ class Main:
 						input(
 							'\nWrite the name of the password you want to delete it\n'
 							'Or write [*] to delete all the passwords:\n'
-						)
+						).lower()
 					)
 
 			else:
@@ -277,14 +281,14 @@ class Main:
 		choose = input('Write [1, Y, Yes] for yes, [2, N, No] for No:\n').strip().upper()
 
 		if choose == '1' or choose == 'Y' or choose == 'YES':
-			name = input('\nWrite the name of the password you want to save it:\n')
+			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
 			if len(name) < 3 or len(name) > 64:
 				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again')
 				return self.ask(string)
 
 			if self.data_file.search(name):
-				print(f'\nThere\'s already a password with name {name} in the data\nPlease try again')
+				print(f'\nThere\'s already a password with name "{name}" in the data\nPlease try again')
 				return self.ask(string)
 
 			self.save_password(name, string)
@@ -309,7 +313,7 @@ class Main:
 			return self.run()
 
 		if self.data_file.search(name) is False:
-			print(f'\nThere\'s no password with name {name} in the data\nPlease try again\n')
+			print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
 			return self.run()
 
 		self.data_file.delete(name)
@@ -330,7 +334,7 @@ class Main:
 
 	def get_pass(self, name: str) -> None:
 		if name != '*' and self.data_file.search(name) is False:
-			print(f'\nThere\'s no password with name {name} in the data\nPlease try again\n')
+			print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
 			return self.run()
 
 		data = self.data_file.show()

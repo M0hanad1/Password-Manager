@@ -57,19 +57,15 @@ class Main:
 	@staticmethod
 	def generate(password_len: int, lst: list) -> str:
 		password = []
-		num = (password_len // len(lst))
 		index = 0
 
 		try:
 			while len(password) < password_len:
-				for _ in range(num):
-					password.append(choice(lst[index]))
-
+				[(password.append(choice(lst[index]))) for _ in range(password_len // len(lst))]
 				index += 1
 
 		except IndexError:
-			for _ in range(password_len - len(password)):
-				password.append(choice(choice(lst)))
+			[password.append(choice(choice(lst))) for _ in range(password_len - len(password))]
 
 		shuffle(password)
 		return ''.join(password)
@@ -159,7 +155,7 @@ class Main:
 		if choose == '1' or choose == 'S' or choose == 'SAVE':
 			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
-			if len(name) < 3 or len(name) > 64:
+			if len(name) < 2 or len(name) > 64:
 				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
 				return self.run()
 
@@ -176,30 +172,7 @@ class Main:
 			return self.save_password(name, password)
 
 		elif choose == '2' or choose == 'M' or choose == 'MAKE':
-			print(
-				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
-				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\n'
-				'If you want to choose a multiple choices you can just write it like this:\n124 or ULP\n'
-			)
-
-			choose = self.check(input("Choose from these:\n").strip().upper())
-
-			if len(choose) == 0:
-				print('\nWrong value please try again\n')
-				return self.run()
-
-			try:
-				pass_len = int(input('\nWrite the size of the password\nShould be between 6 and 128:\n'))
-
-				if pass_len < 6 or pass_len > 128:
-					print('\nThe password size should be between 6 and 128\nPlease try again\n')
-					return self.run()
-
-			except ValueError:
-				print('\nWrong value please try again\n')
-				return self.run()
-
-			self.ask(self.generate(pass_len, choose))
+			return self.ask(self.generate_pass())
 
 		elif choose == 'Q' or choose == 'QUIT':
 			quit('\nOkay\nSee you later')
@@ -235,7 +208,7 @@ class Main:
 							print(f'\nThat\'s the same old name\nPlease try again\n')
 							return self.run()
 
-						if len(new_name) < 3 or len(new_name) > 64:
+						if len(new_name) < 2 or len(new_name) > 64:
 							print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
 							return self.run()
 
@@ -248,17 +221,34 @@ class Main:
 							print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
 							return self.run()
 
-						new_password = input('\nWrite the new password you want to change to it:\n')
+						mode = input(
+									'\nDo you want to write the password by yourself or you want to generate it?\n'
+									'Write:\n[1, W, Write]: To write the password by yourself\n[2, G, Generate]: To'
+									' generate a random password\n'
+								).strip().upper()
 
-						if self.data_file.show()[name] == new_password:
-							print('\nThat\'s the same old password\nPlease try again\n')
+						if mode == '1' or mode == 'W' or mode == 'WRITE':
+							new_password = input('\nWrite the new password you want to change to it:\n')
+
+							if self.data_file.show()[name] == new_password:
+								print('\nThat\'s the same old password\nPlease try again\n')
+								return self.run()
+
+							if len(new_password) < 6 or len(new_password) > 128:
+								print(
+									'\nThe password\'s length should be between 6 and 128 characters\n'
+									'Please try again\n'
+								)
+								return self.run()
+
+							return self.pass_edit(name, new_password)
+
+						elif mode == '2' or mode == 'G' or mode == 'GENERATE':
+							return self.random_edit(name, self.generate_pass())
+
+						else:
+							print('\nWrong value please try again\n')
 							return self.run()
-
-						if len(new_password) < 6 or len(new_password) > 128:
-							print('\nThe password\'s length should be between 6 and 128 characters\nPlease try again\n')
-							return self.run()
-
-						return self.pass_edit(name, new_password)
 
 					else:
 						print('\nWrong value please try again\n')
@@ -283,7 +273,7 @@ class Main:
 		if choose == '1' or choose == 'Y' or choose == 'YES':
 			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
-			if len(name) < 3 or len(name) > 64:
+			if len(name) < 2 or len(name) > 64:
 				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again')
 				return self.ask(string)
 
@@ -291,7 +281,7 @@ class Main:
 				print(f'\nThere\'s already a password with name "{name}" in the data\nPlease try again')
 				return self.ask(string)
 
-			self.save_password(name, string)
+			return self.save_password(name, string)
 
 		elif choose == '2' or choose == 'N' or choose == 'NO':
 			print('\nOkay\n')
@@ -332,6 +322,32 @@ class Main:
 
 		return self.run()
 
+	def random_edit(self, name: str, random_pass) -> None:
+		print(f'\nYour random password is: {random_pass}\n\nDo you want to save it?')
+		save_or_no = input('Write:\n[1, Y, Yes]: for yes\n[2, N, No]: for no\n').strip().upper()
+
+		if save_or_no == '1' or save_or_no == 'Y' or save_or_no == 'YES':
+			return self.pass_edit(name, random_pass)
+
+		elif save_or_no == '2' or save_or_no == 'N' or save_or_no == 'NO':
+			print('\nDo you want to try to generate another password?')
+			try_again = input('Write:\n[1, Y, Yes]: for yes\n[2, N, No]: for no\n')
+
+			if try_again == '1' or try_again == 'Y' or try_again == 'YES':
+				return self.random_edit(name, self.generate_pass())
+
+			elif try_again == '2' or try_again == 'N' or try_again == 'NO':
+				print('\nOkay\n')
+				return self.run()
+
+			else:
+				print('\nWrong value please try again\n')
+				return self.random_edit(name, random_pass)
+
+		else:
+			print('\nWrong value please try again\n')
+			return self.random_edit(name, random_pass)
+
 	def get_pass(self, name: str) -> None:
 		if name != '*' and self.data_file.search(name) is False:
 			print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
@@ -347,3 +363,35 @@ class Main:
 			print(f'\nName: {name}\nPassword: {data[name]}\n')
 
 		return self.run()
+
+	def generate_pass(self) -> str:
+		print(
+				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
+				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\nIf you want to choose a multiple choices you can '
+				'just write it like this:\n124 or ULP\n\nWrite [E, Exit]: to exit from random generate mode\n'
+			)
+
+		choose = input('Choose from these:\n').strip().upper()
+
+		if choose == 'E' or choose == 'EXIT':
+			print('\nOkay\n')
+			return self.run()
+
+		lst_choose = self.check(choose)
+
+		if len(lst_choose) == 0:
+			print('\nWrong value please try again\n')
+			return self.generate_pass()
+
+		try:
+			pass_len = int(input('\nWrite the size of the password\nShould be between 6 and 128:\n'))
+
+			if pass_len < 6 or pass_len > 128:
+				print('\nThe password size should be between 6 and 128\nPlease try again\n')
+				return self.generate_pass()
+
+		except ValueError:
+			print('\nWrong value please try again\n')
+			return self.generate_pass()
+
+		return self.generate(pass_len, lst_choose)

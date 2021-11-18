@@ -364,7 +364,7 @@ class Main:
 
 		return self.run()
 
-	def generate_pass(self) -> str:
+	def generate_pass(self) -> str | None:
 		print(
 				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
 				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\nIf you want to choose a multiple choices you can '

@@ -1,8 +1,9 @@
 from base64 import b85encode, b85decode
+from typing import Union
 
 
 class Data:
-    def __init__(self, target: str | list) -> None:
+    def __init__(self, target: Union[str, list]) -> None:
         self.target = target
 
     def pass_to(self) -> list:

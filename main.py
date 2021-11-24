@@ -3,6 +3,7 @@ from os import path, mkdir, remove
 from json.decoder import JSONDecodeError
 from string import ascii_uppercase, ascii_lowercase, punctuation, digits
 from random import choice, shuffle
+from typing import Union
 
 
 class Main:
@@ -28,7 +29,7 @@ class Main:
 			Main(folder, master_file, data_file).main()
 
 		try:
-			self.data_file.search('test')
+			self.data_file.search(' ')
 
 		except JSONDecodeError:
 			remove(folder + data_file)
@@ -105,9 +106,9 @@ class Main:
 
 	def master_change(self) -> None:
 		print('Do you want to change your master password?')
-		choose = input('Write [1, Y, Yes] for yes, [2, N, No] for No:\n').strip().upper()
+		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No] For no\n').strip().upper()
 
-		if choose == '1' or choose == 'YES' or choose == 'Y':
+		if choose == '1' or choose == 'Y' or choose == 'YES':
 			password = input('\nWrite your new master password:\n')
 
 			if self.master_file.show()['master'] == password:
@@ -126,7 +127,7 @@ class Main:
 			print(f'\nYour new master password is: {password}\n')
 			return self.run()
 
-		elif choose == '2' or choose == 'NO' or choose == 'N':
+		elif choose == '2' or choose == 'N' or choose == 'NO':
 			print("\nOkay\n")
 			return self.run()
 
@@ -140,27 +141,30 @@ class Main:
 		if len(self.data_file.show()) > 0:
 			check = True
 
-		print('[1, S, Save]: to save a new password\n[2, M, Make]: to generate a random password')
+		print('Write:\n[1, S, Save]: To save a new password\n[2, M, Make]: To generate a random password')
 
 		if check:
 			print(
-				'[3, G, Get]: to get a password\\s from the data\n[4, E, Edit]: to edit a password\\name'
-				'\n[5, D, Delete]: to delete a password\\s'
+				'[3, G, Get]: To get a password\\s from the data\n[4, E, Edit]: To edit a password\\name'
+				'\n[5, D, Delete]: To delete a password\\s'
 			)
 
-		print('[Q, Quit]: to quit from the program\n')
+		print('[Q, Quit]: To exit from the program\n')
 
 		choose = input('Choose one of these:\n').strip().upper()
 
-		if choose == '1' or choose == 'S' or choose == 'SAVE':
+		if choose == 'Q' or choose == 'QUIT':
+			quit('\nOkay\nSee you later')
+
+		elif choose == '1' or choose == 'S' or choose == 'SAVE':
 			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
-			if len(name) < 2 or len(name) > 64:
-				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
+			if len(name) < 2 or len(name) > 32:
+				print('\nThe name\'s length should be between 2 and 32 characters\nPlease try again\n')
 				return self.run()
 
 			if self.data_file.search(name):
-				print(f'\nThere\'s already a password with name "{name}" in the data\nPlease try again\n')
+				print(f'\nThere\'s already a password with the name: {name}\nPlease try again\n')
 				return self.run()
 
 			password = input('\nWrite the password:\n')
@@ -174,111 +178,108 @@ class Main:
 		elif choose == '2' or choose == 'M' or choose == 'MAKE':
 			return self.ask(self.generate_pass())
 
-		elif choose == 'Q' or choose == 'QUIT':
-			quit('\nOkay\nSee you later')
+		if check:
+			if choose == '3' or choose == 'G' or choose == 'GET':
+				return self.get_pass(
+					input(
+						'\nWrite the name of the password you want to get it'
+						'\nOr write: *\nto get all the passwords\n'
+					).lower()
+				)
 
-		else:
-			if check:
-				if choose == '3' or choose == 'G' or choose == 'GET':
-					return self.get_pass(
-						input(
-							'\nWrite the name of the password you want to get it\n'
-							'Or write [*] to get all the passwords:\n'
-						).lower()
+			elif choose == '4' or choose == 'E' or choose == 'EDIT':
+				print('\nWrite:\n[1, N, Name]: To edit a name\n[2, P, Password]: To edit a password')
+				edit_mode = input('\nChoose one of these:\n').strip().upper()
+
+				if edit_mode == '1' or edit_mode == 'N' or edit_mode == 'NAME':
+					old_name = input('\nWrite the old name you want to change from it:\n').lower()
+
+					if self.data_file.search(old_name) is False:
+						print(f'\nThere\'s no password with the name: {old_name}\nPlease try again\n')
+						return self.run()
+
+					new_name = input('\nWrite the new name you want to change to it:\n').lower()
+
+					if self.data_file.search(new_name):
+						print(f'\nThere\'s already a password with the name: {new_name}\nPlease try again\n')
+						return self.run()
+
+					if old_name == new_name:
+						print(f'\nThat\'s the same old name\nPlease try again\n')
+						return self.run()
+
+					if len(new_name) < 2 or len(new_name) > 32:
+						print('\nThe name\'s length should be between 2 and 32 characters\nPlease try again\n')
+						return self.run()
+
+					return self.name_edit(old_name, new_name)
+
+				elif edit_mode == '2' or edit_mode == 'P' or edit_mode == 'PASSWORD':
+					name = input('\nWrite the name of the password you want to change it:\n').lower()
+
+					if self.data_file.search(name) is False:
+						print(f'\nThere\'s no password with the name: {name}\nPlease try again\n')
+						return self.run()
+
+					print(
+						'\nDo you want to write the new password by yourself or you want to '
+						'generate a random password?\nWrite:\n[1, W, Write]: To write the '
+						'password by yourself\n[2, G, Generate]: To generate a random password'
 					)
 
-				elif choose == '4' or choose == 'E' or choose == 'EDIT':
-					print('\nWrite:\n[1, N, Name]: to edit a name\n[2, P, Password]: to edit a password')
-					edit_mode = input('\nChoose one of these:\n').strip().upper()
+					mode = input('Choose one of these:\n').strip().upper()
 
-					if edit_mode == '1' or edit_mode == 'N' or edit_mode == 'NAME':
-						old_name = input('\nWrite the old name you want to change from it:\n').lower()
+					if mode == '1' or mode == 'W' or mode == 'WRITE':
+						new_password = input('\nWrite the new password you want to change to it:\n')
 
-						if self.data_file.search(old_name) is False:
-							print(f'\nThere\'s no password with name "{old_name}" in the data\nPlease try again\n')
+						if self.data_file.show()[name] == new_password:
+							print('\nThat\'s the same old password\nPlease try again\n')
 							return self.run()
 
-						new_name = input('\nWrite the new name you want to change to it:\n').lower()
-
-						if self.data_file.search(new_name):
-							print(f'\nThere\'s already a password with name "{new_name}" on the data\nPlease try again\n')
+						if len(new_password) < 6 or len(new_password) > 128:
+							print(
+								'\nThe password\'s length should be between 6 and 128'
+								' characters\nPlease try again\n'
+							)
 							return self.run()
 
-						if old_name == new_name:
-							print(f'\nThat\'s the same old name\nPlease try again\n')
-							return self.run()
+						return self.pass_edit(name, new_password)
 
-						if len(new_name) < 2 or len(new_name) > 64:
-							print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again\n')
-							return self.run()
-
-						return self.name_edit(old_name, new_name)
-
-					elif edit_mode == '2' or edit_mode == 'P' or edit_mode == 'PASSWORD':
-						name = input('\nWrite the name of the password you want to change it:\n').lower()
-
-						if self.data_file.search(name) is False:
-							print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
-							return self.run()
-
-						mode = input(
-									'\nDo you want to write the password by yourself or you want to generate it?\n'
-									'Write:\n[1, W, Write]: To write the password by yourself\n[2, G, Generate]: To'
-									' generate a random password\n'
-								).strip().upper()
-
-						if mode == '1' or mode == 'W' or mode == 'WRITE':
-							new_password = input('\nWrite the new password you want to change to it:\n')
-
-							if self.data_file.show()[name] == new_password:
-								print('\nThat\'s the same old password\nPlease try again\n')
-								return self.run()
-
-							if len(new_password) < 6 or len(new_password) > 128:
-								print(
-									'\nThe password\'s length should be between 6 and 128 characters\n'
-									'Please try again\n'
-								)
-								return self.run()
-
-							return self.pass_edit(name, new_password)
-
-						elif mode == '2' or mode == 'G' or mode == 'GENERATE':
-							return self.random_edit(name, self.generate_pass())
-
-						else:
-							print('\nWrong value please try again\n')
-							return self.run()
+					elif mode == '2' or mode == 'G' or mode == 'GENERATE':
+						return self.random_edit(name, self.generate_pass())
 
 					else:
 						print('\nWrong value please try again\n')
 						return self.run()
 
-				elif choose == '5' or choose == 'D' or choose == 'DELETE':
-					return self.delete_name(
-						input(
-							'\nWrite the name of the password you want to delete it\n'
-							'Or write [*] to delete all the passwords:\n'
-						).lower()
-					)
+				else:
+					print('\nWrong value please try again\n')
+					return self.run()
 
-			else:
-				print('\nWrong value please try again\n')
-				return self.run()
+			elif choose == '5' or choose == 'D' or choose == 'DELETE':
+				return self.delete_name(
+					input(
+						'\nWrite the name of the password you want to delete it\n'
+						'Or write: *\nto delete all the passwords\n'
+					).lower()
+				)
+
+		print('\nWrong value please try again\n')
+		return self.run()
 
 	def ask(self, string: str) -> None:
-		print(f'\nYour random password is: {string}\nDo you want to save it?\n')
-		choose = input('Write [1, Y, Yes] for yes, [2, N, No] for No:\n').strip().upper()
+		print(f'\nYour random password is: {string}\n\nDo you want to save it?')
+		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').strip().upper()
 
 		if choose == '1' or choose == 'Y' or choose == 'YES':
 			name = input('\nWrite the name of the password you want to save it:\n').lower()
 
-			if len(name) < 2 or len(name) > 64:
-				print('\nThe name\'s length should be between 3 and 64 characters\nPlease try again')
+			if len(name) < 2 or len(name) > 32:
+				print('\nThe name\'s length should be between 2 and 32 characters\nPlease try again')
 				return self.ask(string)
 
 			if self.data_file.search(name):
-				print(f'\nThere\'s already a password with name "{name}" in the data\nPlease try again')
+				print(f'\nThere\'s already a password with the name: {name}\nPlease try again')
 				return self.ask(string)
 
 			return self.save_password(name, string)
@@ -298,16 +299,40 @@ class Main:
 
 	def delete_name(self, name: str) -> None:
 		if name == '*':
-			self.data_file.delete_all()
-			print('\nDone\n')
+			print('\nAre you sure you want to delete all the passwords from the data?')
+			choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').strip().upper()
+
+			if choose == 'Y' or choose == 'YES':
+				self.data_file.delete_all()
+				print('\nDone\n')
+
+			elif choose == 'N' or choose == 'NO':
+				print('\nOkay\n')
+
+			else:
+				print('\nWrong value please try again')
+				return self.delete_name(name)
+
 			return self.run()
 
 		if self.data_file.search(name) is False:
-			print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
+			print(f'\nThere\'s no password with the name: {name}\nPlease try again\n')
 			return self.run()
 
-		self.data_file.delete(name)
-		print('\nDone\n')
+		print(f'\nAre you sure you want to delete the password with the name: {name}?')
+		choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').strip().upper()
+
+		if choose == 'Y' or choose == 'YES':
+			self.data_file.delete(name)
+			print('\nDone\n')
+
+		elif choose == 'N' or choose == 'NO':
+			print('\nOkay\n')
+
+		else:
+			print('\nWrong value please try again')
+			return self.delete_name(name)
+
 		return self.run()
 
 	def name_edit(self, old_name: str, new_name: str) -> None:
@@ -324,14 +349,14 @@ class Main:
 
 	def random_edit(self, name: str, random_pass) -> None:
 		print(f'\nYour random password is: {random_pass}\n\nDo you want to save it?')
-		save_or_no = input('Write:\n[1, Y, Yes]: for yes\n[2, N, No]: for no\n').strip().upper()
+		save_or_no = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').strip().upper()
 
 		if save_or_no == '1' or save_or_no == 'Y' or save_or_no == 'YES':
 			return self.pass_edit(name, random_pass)
 
 		elif save_or_no == '2' or save_or_no == 'N' or save_or_no == 'NO':
 			print('\nDo you want to try to generate another password?')
-			try_again = input('Write:\n[1, Y, Yes]: for yes\n[2, N, No]: for no\n')
+			try_again = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n')
 
 			if try_again == '1' or try_again == 'Y' or try_again == 'YES':
 				return self.random_edit(name, self.generate_pass())
@@ -350,25 +375,26 @@ class Main:
 
 	def get_pass(self, name: str) -> None:
 		if name != '*' and self.data_file.search(name) is False:
-			print(f'\nThere\'s no password with name "{name}" in the data\nPlease try again\n')
+			print(f'\nThere\'s no password with the name: {name}\nPlease try again\n')
 			return self.run()
 
 		data = self.data_file.show()
+		print('')
 
 		if name == '*':
-			print('')
 			[print(f'Name: {i}\nPassword: {data[i]}\n') for i in data]
 
 		else:
-			print(f'\nName: {name}\nPassword: {data[name]}\n')
+			print(f'Name: {name}\nPassword: {data[name]}\n')
 
 		return self.run()
 
-	def generate_pass(self) -> str | None:
+	def generate_pass(self) -> Union[str, None]:
 		print(
-				'\nChoose what you want your password to have\n[1, U]: For uppercase letters\n[2, L]: For lowercase letters'
-				'\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\nIf you want to choose a multiple choices you can '
-				'just write it like this:\n124 or ULP\n\nWrite [E, Exit]: to exit from random generate mode\n'
+				'\nChoose what you want your password to have:\n[1, U]: For uppercase letters\n[2, L]: '
+				'For lowercase letters\n[3, D]: For digits (Numbers)\n[4, P]: For punctuation\nIf you '
+				'want to choose a multiple choices you can just write it like this:\n124 or ULP or 12P'
+				'\n\nWrite [E, Exit]: To exit from random generate mode\n'
 			)
 
 		choose = input('Choose from these:\n').strip().upper()

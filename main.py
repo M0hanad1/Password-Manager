@@ -40,17 +40,17 @@ class Main:
 	def check(string: str) -> list:
 		result = []
 
-		for i in range(len(string)):
-			if (string[i] == '1' or string[i] == 'U') and ascii_uppercase not in result:
+		for i in string:
+			if (i == '1' or i == 'U') and ascii_uppercase not in result:
 				result.append(ascii_uppercase)
 
-			elif (string[i] == '2' or string[i] == 'L') and ascii_lowercase not in result:
+			elif (i == '2' or i == 'L') and ascii_lowercase not in result:
 				result.append(ascii_lowercase)
 
-			elif (string[i] == '3' or string[i] == 'D') and digits not in result:
+			elif (i == '3' or i == 'D') and digits not in result:
 				result.append(digits)
 
-			elif (string[i] == '4' or string[i] == 'P') and punctuation not in result:
+			elif (i == '4' or i == 'P') and punctuation not in result:
 				result.append(punctuation)
 
 		return result
@@ -106,7 +106,7 @@ class Main:
 
 	def master_change(self) -> None:
 		print('Do you want to change your master password?')
-		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No] For no\n').strip().upper()
+		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').replace(' ', '').upper()
 
 		if choose == '1' or choose == 'Y' or choose == 'YES':
 			password = input('\nWrite your new master password:\n')
@@ -151,13 +151,13 @@ class Main:
 
 		print('[Q, Quit]: To exit from the program\n')
 
-		choose = input('Choose one of these:\n').strip().upper()
+		choose = input('Choose one of these:\n').replace(' ', '').upper()
 
 		if choose == 'Q' or choose == 'QUIT':
 			quit('\nOkay\nSee you later')
 
 		elif choose == '1' or choose == 'S' or choose == 'SAVE':
-			name = input('\nWrite the name of the password you want to save it:\n').lower()
+			name = input('\nWrite the name of the password you want to save it:\n').replace(' ', '').lower()
 
 			if len(name) < 2 or len(name) > 32:
 				print('\nThe name\'s length should be between 2 and 32 characters\nPlease try again\n')
@@ -184,21 +184,21 @@ class Main:
 					input(
 						'\nWrite the name of the password you want to get it'
 						'\nOr write: *\nto get all the passwords\n'
-					).lower()
+					).replace(' ', '').lower()
 				)
 
 			elif choose == '4' or choose == 'E' or choose == 'EDIT':
 				print('\nWrite:\n[1, N, Name]: To edit a name\n[2, P, Password]: To edit a password')
-				edit_mode = input('\nChoose one of these:\n').strip().upper()
+				edit_mode = input('\nChoose one of these:\n').replace(' ', '').upper()
 
 				if edit_mode == '1' or edit_mode == 'N' or edit_mode == 'NAME':
-					old_name = input('\nWrite the old name you want to change from it:\n').lower()
+					old_name = input('\nWrite the old name you want to change from it:\n').replace(' ', '').lower()
 
 					if self.data_file.search(old_name) is False:
 						print(f'\nThere\'s no password with the name: {old_name}\nPlease try again\n')
 						return self.run()
 
-					new_name = input('\nWrite the new name you want to change to it:\n').lower()
+					new_name = input('\nWrite the new name you want to change to it:\n').replace(' ', '').lower()
 
 					if self.data_file.search(new_name):
 						print(f'\nThere\'s already a password with the name: {new_name}\nPlease try again\n')
@@ -215,7 +215,7 @@ class Main:
 					return self.name_edit(old_name, new_name)
 
 				elif edit_mode == '2' or edit_mode == 'P' or edit_mode == 'PASSWORD':
-					name = input('\nWrite the name of the password you want to change it:\n').lower()
+					name = input('\nWrite the name of the password you want to change it:\n').replace(' ', '').lower()
 
 					if self.data_file.search(name) is False:
 						print(f'\nThere\'s no password with the name: {name}\nPlease try again\n')
@@ -227,7 +227,7 @@ class Main:
 						'password by yourself\n[2, G, Generate]: To generate a random password'
 					)
 
-					mode = input('Choose one of these:\n').strip().upper()
+					mode = input('Choose one of these:\n').replace(' ', '').upper()
 
 					if mode == '1' or mode == 'W' or mode == 'WRITE':
 						new_password = input('\nWrite the new password you want to change to it:\n')
@@ -261,7 +261,7 @@ class Main:
 					input(
 						'\nWrite the name of the password you want to delete it\n'
 						'Or write: *\nto delete all the passwords\n'
-					).lower()
+					).replace(' ', '').lower()
 				)
 
 		print('\nWrong value please try again\n')
@@ -269,10 +269,10 @@ class Main:
 
 	def ask(self, string: str) -> None:
 		print(f'\nYour random password is: {string}\n\nDo you want to save it?')
-		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').strip().upper()
+		choose = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').replace(' ', '').upper()
 
 		if choose == '1' or choose == 'Y' or choose == 'YES':
-			name = input('\nWrite the name of the password you want to save it:\n').lower()
+			name = input('\nWrite the name that you want your password to have:\n').replace(' ', '').lower()
 
 			if len(name) < 2 or len(name) > 32:
 				print('\nThe name\'s length should be between 2 and 32 characters\nPlease try again')
@@ -300,7 +300,7 @@ class Main:
 	def delete_name(self, name: str) -> None:
 		if name == '*':
 			print('\nAre you sure you want to delete all the passwords from the data?')
-			choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').strip().upper()
+			choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').replace(' ', '').upper()
 
 			if choose == 'Y' or choose == 'YES':
 				self.data_file.delete_all()
@@ -320,7 +320,7 @@ class Main:
 			return self.run()
 
 		print(f'\nAre you sure you want to delete the password with the name: {name}?')
-		choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').strip().upper()
+		choose = input('Write:\n[Y, Yes]: For yes\n[N, No]: For no\n').replace(' ', '').upper()
 
 		if choose == 'Y' or choose == 'YES':
 			self.data_file.delete(name)
@@ -349,13 +349,13 @@ class Main:
 
 	def random_edit(self, name: str, random_pass) -> None:
 		print(f'\nYour random password is: {random_pass}\n\nDo you want to save it?')
-		save_or_no = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').strip().upper()
+		save_or_no = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n').replace(' ', '').upper()
 
 		if save_or_no == '1' or save_or_no == 'Y' or save_or_no == 'YES':
 			return self.pass_edit(name, random_pass)
 
 		elif save_or_no == '2' or save_or_no == 'N' or save_or_no == 'NO':
-			print('\nDo you want to try to generate another password?')
+			print('\nDo you want to try to generate another random password?')
 			try_again = input('Write:\n[1, Y, Yes]: For yes\n[2, N, No]: For no\n')
 
 			if try_again == '1' or try_again == 'Y' or try_again == 'YES':
@@ -382,7 +382,7 @@ class Main:
 		print('')
 
 		if name == '*':
-			[print(f'Name: {i}\nPassword: {data[i]}\n') for i in data]
+			[print(f'Name: {i}\nPassword: {j}\n') for i, j in data.items()]
 
 		else:
 			print(f'Name: {name}\nPassword: {data[name]}\n')
@@ -397,7 +397,7 @@ class Main:
 				'\n\nWrite [E, Exit]: To exit from random generate mode\n'
 			)
 
-		choose = input('Choose from these:\n').strip().upper()
+		choose = input('Choose from these:\n').replace(' ', '').upper()
 
 		if choose == 'E' or choose == 'EXIT':
 			print('\nOkay\n')

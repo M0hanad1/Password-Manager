@@ -28,7 +28,7 @@ class File:
 	def show(self) -> dict:
 		with open(self.file_name) as f:
 			data = load(f)
-			return {Data(i).name_from(): Data(data[i]).pass_from() for i in data}
+			return {Data(i).name_from(): Data(j).pass_from() for i, j in data.items()}
 
 	def edit_name(self, old_name: str, new_name: str) -> None:
 		with open(self.file_name) as f:

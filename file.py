@@ -20,7 +20,8 @@ class File:
 	def save(self, name: str, password: str) -> None:
 		with open(self.file_name) as f:
 			data = load(f)
-			data[Data(name).name_to()] = Data(password).pass_to()
+
+		data[Data(name).name_to()] = Data(password).pass_to()
 
 		with open(self.file_name, 'w') as d:
 			dump(data, d, indent=4)
@@ -28,14 +29,15 @@ class File:
 	def show(self) -> dict:
 		with open(self.file_name) as f:
 			data = load(f)
-			return {Data(i).name_from(): Data(j).pass_from() for i, j in data.items()}
+
+		return {Data(i).name_from(): Data(j).pass_from() for i, j in data.items()}
 
 	def edit_name(self, old_name: str, new_name: str) -> None:
 		with open(self.file_name) as f:
 			data = load(f)
 
-			data[Data(new_name).name_to()] = data[Data(old_name).name_to()]
-			del data[Data(old_name).name_to()]
+		data[Data(new_name).name_to()] = data[Data(old_name).name_to()]
+		del data[Data(old_name).name_to()]
 
 		with open(self.file_name, 'w') as d:
 			dump(data, d, indent=4)
@@ -43,7 +45,8 @@ class File:
 	def edit_pass(self, name: str, password: str) -> None:
 		with open(self.file_name) as f:
 			data = load(f)
-			data[Data(name).name_to()] = Data(password).pass_to()
+
+		data[Data(name).name_to()] = Data(password).pass_to()
 
 		with open(self.file_name, 'w') as d:
 			dump(data, d, indent=4)
@@ -51,7 +54,8 @@ class File:
 	def delete(self, name: str) -> None:
 		with open(self.file_name) as f:
 			data = load(f)
-			del data[Data(name).name_to()]
+
+		del data[Data(name).name_to()]
 
 		with open(self.file_name, 'w') as d:
 			dump(data, d, indent=4)

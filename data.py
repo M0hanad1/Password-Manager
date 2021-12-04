@@ -10,7 +10,7 @@ class Data:
         return [ord(i) for i in self.target]
 
     def pass_from(self) -> str:
-        return "".join([chr(i) for i in self.target])
+        return "".join(chr(i) for i in self.target)
 
     def name_to(self) -> str:
         return str(b85encode(bytes(self.target, 'utf-8')))[2:-1]
